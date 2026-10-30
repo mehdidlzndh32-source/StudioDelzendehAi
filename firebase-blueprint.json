@@ -1,0 +1,63 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile with role-based access control for AIONVERSE",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["owner", "admin", "accountant", "reviewer", "operator", "member", "viewer"] },
+        "nationalId": { "type": "string" },
+        "organization": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "name", "email", "role"]
+    },
+    "DevelopmentFundLedger": {
+      "title": "DevelopmentFundLedger",
+      "description": "Double-entry accounting record for the 5% and 30% development fund",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "date": { "type": "string" },
+        "amount": { "type": "number" },
+        "type": { "type": "string", "enum": ["credit", "debit"] },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "approved", "rejected"] },
+        "submittedBy": { "type": "string" },
+        "approvedBy": { "type": "string" }
+      },
+      "required": ["id", "date", "amount", "type", "status"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "System event audit trail for tracking operations",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "action": { "type": "string" },
+        "actor": { "type": "string" },
+        "details": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "action", "actor", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User account documents keyed by Auth UID"
+    },
+    "/development_fund/{entryId}": {
+      "schema": "DevelopmentFundLedger",
+      "description": "Development fund double-entry ledger items"
+    },
+    "/audit_logs/{logId}": {
+      "schema": "AuditLog",
+      "description": "System audit logs"
+    }
+  }
+}
