@@ -1,24 +1,47 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
-import firebaseConfig from '../firebase-applet-config.json';
+import { getApp, getApps, initializeApp, type FirebaseApp } from 'firebase/app';
+import { getAuth, type Auth } from 'firebase/auth';
+import { getFirestore, type Firestore, doc, getDocFromServer } from 'firebase/firestore';
 
-// Initialize Firebase SDK
-export const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+const config = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  databaseId: import.meta.env.VITE_FIREBASE_DATABASE_ID,
+};
 
-// Critical constraint: Validate connection to Firestore on initialization
+export const firebaseConfigured = Boolean(
+  config.apiKey && config.authDomain && config.projectId && config.appId,
+);
+
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
+
+if (firebaseConfigured) {
+  app = getApps().length ? getApp() : initializeApp({
+    apiKey: config.apiKey,
+    authDomain: config.authDomain,
+    projectId: config.projectId,
+    appId: config.appId,
+    storageBucket: config.storageBucket || undefined,
+    messagingSenderId: config.messagingSenderId || undefined,
+  });
+  auth = getAuth(app);
+  db = getFirestore(app, config.databaseId || undefined);
+}
+
+export { app, auth, db };
+
 export async function validateFirestoreConnection(): Promise<boolean> {
+  if (!db) return false;
   try {
-    await getDocFromServer(doc(db, 'test', 'connection'));
+    await getDocFromServer(doc(db, 'healthchecks', 'client'));
     return true;
   } catch (error) {
-    if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.warn('Firestore connection warning: client is offline or network restricted.');
-      return false;
-    }
-    // Document not existing is still a successful connection roundtrip
-    return true;
+    console.warn('Firestore connectivity check failed.', error);
+    return false;
   }
 }
