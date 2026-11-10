@@ -1,50 +1,16 @@
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
+import { createRoot } from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
+import { validateFirestoreConnection } from './firebase.ts';
 
-    function isSignedIn() {
-      return request.auth != null;
-    }
+const rootElement = document.getElementById('root');
 
-    function isOwner() {
-      return isSignedIn() && (
-        request.auth.token.email == 'owner@aurevia.ai' ||
-        request.auth.token.email == 'mehdidlzndh6@gmail.com' ||
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'owner'
-      );
-    }
-
-    function isAccountant() {
-      return isSignedIn() && (
-        isOwner() ||
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'accountant'
-      );
-    }
-
-    // User profiles: users can read their own profile, owner can read/write all
-    match /users/{userId} {
-      allow read: if isSignedIn();
-      allow write: if isOwner() || request.auth.uid == userId;
-    }
-
-    // Development fund ledger: accountant can draft, only owner can approve or reject
-    match /development_fund/{entryId} {
-      allow read: if isSignedIn();
-      allow create: if isAccountant();
-      allow update: if isOwner();
-      allow delete: if false; // Immutable accounting ledger
-    }
-
-    // Audit logs: anyone signed in can create audit logs, only owner can read all
-    match /audit_logs/{logId} {
-      allow read: if isOwner();
-      allow create: if isSignedIn();
-      allow update, delete: if false; // Append-only audit logs
-    }
-
-    // Connection testing doc
-    match /test/{docId} {
-      allow read, write: if true;
-    }
-  }
+if (!rootElement) {
+  throw new Error('Application root element #root was not found.');
 }
+
+validateFirestoreConnection().catch(() => {
+  // Firestore is optional until the deployment environment provides valid credentials.
+});
+
+createRoot(rootElement).render(<App />);

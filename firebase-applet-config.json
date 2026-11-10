@@ -1,12 +1,18 @@
-{
-  "projectId": "gen-lang-client-0751564659",
-  "appId": "1:752630464465:web:28f618660e79b8c2752af0",
-  "apiKey": "AIzaSyCz_tM0HlShWimLUd2CNi-6qFC5Mspho-w",
-  "authDomain": "gen-lang-client-0751564659.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-aionversesuperpl-a978b44c-223d-462c-b377-7a16087f5ef1",
-  "storageBucket": "gen-lang-client-0751564659.firebasestorage.app",
-  "messagingSenderId": "752630464465",
-  "measurementId": "",
-  "oAuthClientId": "752630464465-0ine2o0ronse8u20f9bkshqsdskhutqn.apps.googleusercontent.com",
-  "recaptchaSiteKey": ""
-}
+# Frontend runtime variables for the Vite app.
+# Keep all real secrets in the hosting provider's secret manager or server runtime,
+# not inside the repository or browser bundle.
+
+VITE_APP_ENV=development
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_APP_ID=
+VITE_FIREBASE_DATABASE_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+
+# Optional provider configuration (do not set service-role keys in the browser bundle)
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+VITE_GEMINI_API_KEY=
+VITE_CLOUDFLARE_API_TOKEN=
